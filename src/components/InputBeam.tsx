@@ -8,6 +8,7 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/table";
+import { useState } from "react";
 import { RayleighRange } from "../calculate";
 import { Beam } from "../types";
 
@@ -20,6 +21,9 @@ export default function InputBeam({
   setInputBeam: (beam: Beam) => void;
   wavelength: number;
 }) {
+  const [display_position, setDisplayPosition] = useState(
+    String(input_beam.position)
+  );
   const columns = [
     {
       key: "optics",
@@ -47,10 +51,11 @@ export default function InputBeam({
         <CustomInput
           className="max-w-20 justify-self-center"
           type="number"
-          value={String(input_beam.position)}
-          onValueChange={(value) => {
-            setInputBeam({ ...input_beam, position: Number(value) });
-          }}
+          value={display_position}
+          onValueChange={(value) => setDisplayPosition(value)}
+          onBlur={(e) =>
+            handleChangePosition(Number((e.target as HTMLInputElement).value))
+          }
         />
       ),
       waist: (
@@ -66,6 +71,14 @@ export default function InputBeam({
       rayleigh_range: RayleighRange(input_beam.waist, wavelength).toFixed(3),
     },
   ];
+
+  function handleChangePosition(value: number) {
+    setInputBeam({
+      ...input_beam,
+      position: value,
+    });
+    setDisplayPosition(String(value));
+  }
 
   return (
     <Table aria-label="Input beam">

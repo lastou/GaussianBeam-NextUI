@@ -140,7 +140,12 @@ export default function LensTable({
     );
     setNumDisplay(
       [...num_display]
-        .map((item) => ({ ...item, position: String(Number(item.position)) }))
+        .map((item, i) => {
+          if (i === index) {
+            return { ...item, position: String(value) };
+          }
+          return item;
+        })
         .sort((a, b) => Number(a.position) - Number(b.position))
     );
   }
@@ -156,10 +161,12 @@ export default function LensTable({
       })
     );
     setNumDisplay(
-      [...num_display].map((item) => ({
-        ...item,
-        focus: String(Number(item.focus)),
-      }))
+      [...num_display].map((item, i) => {
+        if (i === index) {
+          return { ...item, focus: String(value) };
+        }
+        return item;
+      })
     );
   }
 
