@@ -24,7 +24,7 @@ export default function LensTable({
   default_lens: Lens;
 }) {
   const [position_display, setPositionDisplay] = useState(
-    lenses.map((lens) => lens.position)
+    lenses.map((lens) => String(lens.position))
   );
 
   const columns = [
@@ -66,10 +66,8 @@ export default function LensTable({
       <CustomInput
         className="max-w-20 justify-self-center"
         type="number"
-        value={String(position_display[index])}
-        onValueChange={(value) =>
-          handleChangeDisplayPosition(index, Number(value))
-        }
+        value={position_display[index]}
+        onValueChange={(value) => handleChangeDisplayPosition(index, value)}
         onBlur={(e) =>
           handleChangePosition(
             index,
@@ -107,7 +105,9 @@ export default function LensTable({
       [...lenses, default_lens].sort((a, b) => a.position - b.position)
     );
     setPositionDisplay(
-      [...position_display, default_lens.position].sort((a, b) => a - b)
+      [...position_display, String(default_lens.position)].sort(
+        (a, b) => Number(a) - Number(b)
+      )
     );
   }
 
@@ -128,7 +128,11 @@ export default function LensTable({
         })
         .sort((a, b) => a.position - b.position)
     );
-    setPositionDisplay([...position_display].sort((a, b) => a - b));
+    setPositionDisplay(
+      [...position_display]
+        .map((p) => String(Number(p)))
+        .sort((a, b) => Number(a) - Number(b))
+    );
   }
 
   function handleChangeFocus(index: number, value: number) {
@@ -143,7 +147,7 @@ export default function LensTable({
     );
   }
 
-  function handleChangeDisplayPosition(index: number, value: number) {
+  function handleChangeDisplayPosition(index: number, value: string) {
     setPositionDisplay(
       position_display.map((pos, i) => {
         if (i === index) {
