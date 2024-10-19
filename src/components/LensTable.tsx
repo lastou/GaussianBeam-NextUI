@@ -23,8 +23,11 @@ export default function LensTable({
   input_beam_position: number;
   default_lens: Lens;
 }) {
-  const [position_display, setPositionDisplay] = useState(
-    lenses.map((lens) => String(lens.position))
+  const [num_display, setNumDisplay] = useState(
+    lenses.map((lens) => ({
+      position: String(lens.position),
+      focus: String(lens.focus),
+    }))
   );
 
   const columns = [
@@ -66,7 +69,7 @@ export default function LensTable({
       <CustomInput
         className="max-w-20 justify-self-center"
         type="number"
-        value={position_display[index]}
+        value={num_display[index].position}
         onValueChange={(value) => handleChangeDisplayPosition(index, value)}
         onBlur={(e) =>
           handleChangePosition(
@@ -84,8 +87,11 @@ export default function LensTable({
       <CustomInput
         className="max-w-20 justify-self-center"
         type="number"
-        value={String(lens.focus)}
-        onValueChange={(value) => handleChangeFocus(index, Number(value))}
+        value={num_display[index].focus}
+        onValueChange={(value) => handleChangeDisplayFocus(index, value)}
+        onBlur={(e) =>
+          handleChangeFocus(index, Number((e.target as HTMLInputElement).value))
+        }
       />
     ),
     action: (
@@ -104,16 +110,20 @@ export default function LensTable({
     setLenses(
       [...lenses, default_lens].sort((a, b) => a.position - b.position)
     );
-    setPositionDisplay(
-      [...position_display, String(default_lens.position)].sort(
-        (a, b) => Number(a) - Number(b)
-      )
+    setNumDisplay(
+      [
+        ...num_display,
+        {
+          position: String(default_lens.position),
+          focus: String(default_lens.focus),
+        },
+      ].sort((a, b) => Number(a.position) - Number(b.position))
     );
   }
 
   function handleDeleteLens(index: number) {
     setLenses(lenses.filter((_, i) => i !== index));
-    setPositionDisplay(position_display.filter((_, i) => i !== index));
+    setNumDisplay(num_display.filter((_, i) => i !== index));
   }
 
   function handleChangePosition(index: number, value: number) {
@@ -128,10 +138,10 @@ export default function LensTable({
         })
         .sort((a, b) => a.position - b.position)
     );
-    setPositionDisplay(
-      [...position_display]
-        .map((p) => String(Number(p)))
-        .sort((a, b) => Number(a) - Number(b))
+    setNumDisplay(
+      [...num_display]
+        .map((item) => ({ ...item, position: String(Number(item.position)) }))
+        .sort((a, b) => Number(a.position) - Number(b.position))
     );
   }
 
@@ -145,15 +155,32 @@ export default function LensTable({
         }
       })
     );
+    setNumDisplay(
+      [...num_display].map((item) => ({
+        ...item,
+        focus: String(Number(item.focus)),
+      }))
+    );
   }
 
   function handleChangeDisplayPosition(index: number, value: string) {
-    setPositionDisplay(
-      position_display.map((pos, i) => {
+    setNumDisplay(
+      num_display.map((item, i) => {
         if (i === index) {
-          return value;
+          return { ...item, position: value };
         }
-        return pos;
+        return item;
+      })
+    );
+  }
+
+  function handleChangeDisplayFocus(index: number, value: string) {
+    setNumDisplay(
+      num_display.map((item, i) => {
+        if (i === index) {
+          return { ...item, focus: value };
+        }
+        return item;
       })
     );
   }
