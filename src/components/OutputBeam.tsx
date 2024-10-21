@@ -26,7 +26,7 @@ export default function OutputBeam({
     },
     {
       key: "position",
-      label: "Position(mm)",
+      label: "Waist position(mm)",
     },
     {
       key: "relative_position",
